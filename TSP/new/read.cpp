@@ -1,0 +1,87 @@
+#include<iostream>
+#include<fstream>
+#include<cstdlib>
+#include<math.h>
+#include<string>
+using namespace std;
+int strToInt(string s){
+	int sum=0;
+	for(int i=0;i!=s.length();i++){
+		sum*=10;
+		sum+=(s[i]-'0');
+	}
+	return sum;
+}
+double power2(double x){
+	return x*x;
+}
+void init(int* dis,int dim,ifstream &file){
+	string s;
+	for(int i=0;i!=18;i++){
+                file>>s;
+        }
+	int city[107][3];
+        for(int i=0;i!=dim;i++){
+                for(int j=0;j!=3;j++){
+                        file>>s;
+                        city[i][j]=strToInt(s);
+                }
+        }
+        for(int i=0;i!=dim;i++){
+                for(int j=i;j!=dim;j++){
+                        double tmp=power2(city[i][1]-city[j][1])+power2(city[i][2]-city[j][2]);
+                        dis[i*dim+j]=sqrt(tmp);
+                        dis[j*dim+i]=sqrt(tmp);
+                }
+        }
+        for(int i=0;i!=dim;i++)
+                dis[i*dim+i]=0;
+}
+int main(){
+	string s;
+	ifstream file("pr107.tsp");
+	if(!file.is_open()){
+		cout<<"open file failed"<<endl;
+	}
+	int dim=107;
+	//for(int i=0;i!=18;i++){
+	//	file>>s;
+	//}
+	int* dis;
+	dis=new int [dim*dim];
+	init(dis,dim,file);
+	file.close();
+	/*int city[107][3];
+	for(int i=0;i!=dim;i++){
+		for(int j=0;j!=3;j++){
+			file>>s;
+			city[i][j]=strToInt(s);
+		}
+	}
+	//for(int i=0;i!=107;i++){
+		for(int j=0;j!=3;j++){
+			cout<<city[i][j]<<" ";
+		}
+		cout<<endl;
+	}//
+//	cout<<PW2(-10)<<endl;
+	double* dis;
+	dis=new double [dim*dim];
+	for(int i=0;i!=dim;i++){
+		for(int j=i;j!=dim;j++){
+			double tmp=power2(city[i][1]-city[j][1])+power2(city[i][2]-city[j][2]);
+			dis[i*dim+j]=sqrt(tmp);
+			dis[j*dim+i]=sqrt(tmp);
+			//cout<<tmp<<endl;
+		}
+	} 
+	for(int i=0;i!=dim;i++)
+		dis[i*dim+i]=0;
+	for(int i=0;i!=dim;i++){
+		for(int j=0;j!=dim;j++){
+			cout<<dis[i*dim+j]<<",";
+		}
+		cout<<endl;
+	}*/
+	return 0;
+}
