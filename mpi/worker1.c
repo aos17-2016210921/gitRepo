@@ -18,7 +18,6 @@ int main(int argc,char* argv[]){
 	int info=1;
 	int stage=-1;
 	int flag=true;
-	int signal=1;
 	while(flag){
 		MPI_Status sta;
 		stage=-1;
@@ -27,83 +26,60 @@ int main(int argc,char* argv[]){
 		//printf("state:%d\n",state);
 		switch(stage){
 			case 0:
+				flag=false;
 				break;
 			case 1:
 				signal=1;
-				omp_set_num_threads(2);
 				#pragma omp parallel sections
 				{
 					#pragma omp section
 					{
-						info=1;
 						while(signal){
-							MPI_Status sta;
-							MPI_Send(&info,1,MPI_INT,0,0,parent);
-							MPI_Recv(&stage,1,MPI_INT,0,0,parent,&sta);
-							if(stage==1&&info==2){
-								signal=0;
-							}
+							MPI_Send();
+							MPI_Recv();
 						}
 					}
 					#pragma omp section
 					{
 						map(&info);
-						info=2;
+						signal=0;
 					}
 				}
+				MPI_Send();
+				MPI_Recv();
 				break;
 			case 2:
 				signal=1;
-				omp_set_num_threads(2);
 				#pragma omp parallel sections
 				{
 					#pragma omp section
 					{
-						info=1;
 						while(signal){
-							MPI_Status sta;
-							MPI_Send(&info,1,MPI_INT,0,0,parent);
-							MPI_Recv(&stage,1,MPI_INT,0,0,parent,&sta);
-							if(stage==1&&info==3){
-								signal=0;
-							} 
-							if(stage==3){
-								flag=false;
-								signal=0;
-							//	printf("trigger");
-							}
+							MPI_Send();
+							MPI_Recv();
 						}
 					}
 					#pragma omp section
 					{
 						reduce(&info);
-						info=3;
+						signal=0;
 					}
 				}
-				break;
-			case 3:
-				flag=false;
-			//	printf("triggered!\n");
+				MPI_Send();
+				MPI_Recv();
 				break;
 			default:
 				info=1;
 				break;
 		}
-	}//end while
-	printf("ret child\n");
+	}
 	MPI_Finalize();
 	printf("ret\n");
 	return 0;
 }
 void map(int* info){
-	printf("map begin!\n");
-	usleep(3000000);
-	printf("map end!\n");
 	*info=1;
 }
 void reduce(int* info){
-	printf("reduce begin!\n");
-	usleep(3000000);
-	printf("reduce end!\n");
 	*info=1;
 }
