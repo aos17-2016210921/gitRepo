@@ -1,0 +1,24 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<omp.h>
+int main(int argc,char* argv[]){
+	omp_set_num_threads(2);
+	#pragma omp parallel sections
+	{
+		#pragma omp section
+		{
+			int i=0;
+			for(i=0;i!=100;i++)
+			printf("sec1 %d\n",omp_get_thread_num());
+		}
+		#pragma omp section
+		{
+			int j=0;
+			for(j=0;j!=100;j++)
+			printf("sec2 %d\n",omp_get_thread_num());
+		}
+	
+	}
+	return 0;
+}
+
