@@ -1,9 +1,11 @@
 #include<stdio.h>
+#include<iostream>
 #include<stdlib.h>
 #include<sys/time.h>
 #include<unistd.h>
 #include<random>
 #include<cstdlib>
+#include<sstream>
 #include<omp.h>
 #include"mpi.h"
 #include"mapReduce.h"
@@ -46,7 +48,12 @@ int main(int argc,char* argv[]){
 	printf("begin worker\n");
 	int timeuse=0;
 	string fileName;
-	fileName="map"+mapID;
+	string mapS;
+	stringstream ss;
+	ss<<mapID;
+	ss>>mapS;
+	fileName="map"+mapS;
+	cout<<fileName<<endl;
 	while(flag){
 				switch(stage){
 					case 0:
@@ -151,7 +158,7 @@ void doMap(int& info,string file,int mapID,int reduceNum){//generate relative fi
 	printf("mapID:%d!\n",mapID);
 	KV pair;
 //	usleep(300000);
-	pair=Map(file,reduceNum);
+	Map(file,reduceNum);
 	info=1;
 }
 void doReduce(int& info){ //pull the file and feed to reduce
