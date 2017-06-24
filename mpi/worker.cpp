@@ -158,6 +158,7 @@ void doMap(int& info,string file,int mapID,int reduceNum){//generate relative fi
 	printf("mapID:%d!\n",mapID);
 	KV pair;
 //	usleep(300000);
+	
 	Map(file,reduceNum);
 	info=1;
 }

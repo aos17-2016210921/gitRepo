@@ -40,7 +40,7 @@ void Map(string fileName,int reduceNum){
 	}
 	usleep(200000);
 }
-
+KV Map(string key);
 void Reduce(){
 	usleep(300000);
 }
