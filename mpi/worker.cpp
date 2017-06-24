@@ -4,6 +4,7 @@
 #include<sys/time.h>
 #include<unistd.h>
 #include<random>
+#include<string>
 #include<cstdlib>
 #include<sstream>
 #include<omp.h>
@@ -18,6 +19,12 @@ double randm(){
 	default_random_engine generator(random_device{}());
 	uniform_real_distribution<double> fun(0.0,1.0);
 	return fun(generator);
+}
+void stoch(string s,char *ch){
+	for(int i=0;i!=s.length();i++){
+		ch[i]=s[i];
+	}
+	ch[s.length()]='\0';
 }
 int main(int argc,char* argv[]){
 //	printf("start successfully\n");
@@ -154,12 +161,69 @@ int main(int argc,char* argv[]){
 	printf("ret\n");
 	return 0;
 }
-void doMap(int& info,string file,int mapID,int reduceNum){//generate relative file to feed reduce
+void doMap(int& info,string fileName,int mapID,int reduceNum){//generate relative file to feed reduce
 	printf("mapID:%d!\n",mapID);
 	KV pair;
 //	usleep(300000);
-	
-	Map(file,reduceNum);
+	ifstream file;
+	char fileN[100];
+	for(int i=0;i!=fileName.length();i++){
+		fileN[i]=fileName[i];
+	}
+	fileN[fileName.length()]='\0';
+	file.open(fileN,ios::in);
+	for(int i=0;i!=reduceNum;i++){
+		ofstream output;
+		string fileOut(fileName);
+		string s;
+		stringstream ss;
+		ss<<i;
+		ss>>s;
+		fileOut+="out"+s;
+		char fileT[100];
+		for(int i=0;i!=fileOut.length();i++){
+			fileT[i]=fileOut[i];
+		}
+		fileT[fileOut.length()]='\0';
+		output.open(fileT,ios::out|ios::trunc);
+		if(output.is_open()){
+			output.close();
+		}
+	}
+	if(file.is_open()){
+		file.close();
+	}
+	string KeyFile=Map(fileName);
+	char kFCh[100];
+	stoch(KeyFile,kFCh);
+	ifstream fileK;
+	fileK.open(kFCh,ios::in);
+	ofstream *out;
+	out=new ofstream [reduceNum];
+	for(int i=0;i!=reduceNum;i++){
+		string fileOut(fileName);
+		string s;
+		stringstream ss;
+		ss<<i;
+		ss>>s;
+		fileOut+="out"+s;
+		char fileT[100];
+		stoch(fileOut,fileT);
+		out[i].open(fileT,ios::out);
+	}
+	while(!fileK.eof()){
+		string s;
+		getline(file,s);
+		if(file.eof()){
+			break;
+		}
+		int kpos=s.find_first_of("key",0);
+		int vpos=s.find_first_of(",",0)+1;
+		int len=vpos-1-(kpos+4);
+		string key+=s.substr(kpos+4,len);
+		int index=keyHash(key)%reduceNum;
+		out[i]<<s<<endl;
+	}
 	info=1;
 }
 void doReduce(int& info){ //pull the file and feed to reduce

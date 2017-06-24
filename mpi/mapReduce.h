@@ -2,19 +2,10 @@
 #define _MAPREDUCE_H_
 #include<fstream>
 #include<string>
-class KV{
-	std::string key;
-	std::string value;
-public:
-	~KV();
-	KV();
-	KV(std::string k,std::string v){
-		key=k;
-		value=v;
-	}
-
-};
-
+typedef struct KV{
+	string key;
+	string value;
+}KV;
 void Map(std::string fileName,int reduceNum);
 void Reduce();
 
