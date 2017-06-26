@@ -3,10 +3,13 @@
 #include<fstream>
 #include<string>
 typedef struct KV{
-	string key;
-	string value;
+	std::string key;
+	std::string value;
 }KV;
-void Map(std::string fileName,int reduceNum);
-void Reduce();
-
+void stoch(std::string,char *ch);
+std::string itostr(int i);
+std::string Map(std::string fileName);
+std::string Reduce(std::string fineName,int reduceId);
+int KeyHash(std::string s,int *p);
+void parse(std::string s,KV &kv);
 #endif

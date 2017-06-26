@@ -8,23 +8,19 @@
 #include<cstdlib>
 #include<sstream>
 #include<omp.h>
+#include<map>
 #include"mpi.h"
 #include"mapReduce.h"
 #define false 0
 #define true 1
 using namespace std;
 void doMap(int& info,string fileName,int mapID,int reduceNum);
-void doReduce(int& info);
+void doReduce(int& info,int mapNum,int reduceId);
+void priGen(int *p,int len);
 double randm(){
 	default_random_engine generator(random_device{}());
 	uniform_real_distribution<double> fun(0.0,1.0);
 	return fun(generator);
-}
-void stoch(string s,char *ch){
-	for(int i=0;i!=s.length();i++){
-		ch[i]=s[i];
-	}
-	ch[s.length()]='\0';
 }
 int main(int argc,char* argv[]){
 //	printf("start successfully\n");
@@ -36,12 +32,14 @@ int main(int argc,char* argv[]){
 	struct timeval t_end,t_start;
 //	printf("rank:%d\n",rank);
 	int stage=-1;
-	int initData[3];
+	int initData[5];
 	MPI_Status sta;
-	MPI_Recv(&initData,3,MPI_INT,0,0,parent,&sta);
+	MPI_Recv(&initData,5,MPI_INT,0,0,parent,&sta);
 	stage=initData[0];
-	int reduceNum=initData[2];
 	int mapID=initData[1];
+	int mapNum=initData[2];
+	int reduceId=initData[3];
+	int reduceNum=initData[4];
 	int finished=false;
 	if(stage<0){
 		finished=true;
@@ -50,6 +48,7 @@ int main(int argc,char* argv[]){
 	}
 	int t=10;
 	int info=1;
+	cout<<"reduceId:"<<reduceId<<endl;
 	int flag=true;
 	int signal=1;
 	printf("begin worker\n");
@@ -132,7 +131,7 @@ int main(int argc,char* argv[]){
 								#pragma omp section
 								{
 									if(!finished){
-									doReduce(info);
+										doReduce(info,mapNum,reduceId);
 									}
 									info=3;
 								}
@@ -162,6 +161,8 @@ int main(int argc,char* argv[]){
 	return 0;
 }
 void doMap(int& info,string fileName,int mapID,int reduceNum){//generate relative file to feed reduce
+	int primer[50];
+	priGen(primer,50);
 	printf("mapID:%d!\n",mapID);
 	KV pair;
 //	usleep(300000);
@@ -213,33 +214,97 @@ void doMap(int& info,string fileName,int mapID,int reduceNum){//generate relativ
 	}
 	while(!fileK.eof()){
 		string s;
-		getline(file,s);
-		if(file.eof()){
+		getline(fileK,s);
+		if(fileK.eof()){
 			break;
 		}
 		int kpos=s.find_first_of("key",0);
 		int vpos=s.find_first_of(",",0)+1;
 		int len=vpos-1-(kpos+4);
-		string key+=s.substr(kpos+4,len);
-		int index=keyHash(key)%reduceNum;
-		out[i]<<s<<endl;
+		string key;
+		key+=s.substr(kpos+4,len);
+		int index=KeyHash(key,primer)%reduceNum;
+		out[index]<<s<<endl;
 	}
+	for(int i=0;i!=reduceNum;i++){
+		out[i].close();
+	}
+	fileK.close();
+	remove(kFCh);
 	info=1;
 }
-void doReduce(int& info){ //pull the file and feed to reduce
-	printf("reduce begin!\n");
-	KV pair;
-	usleep(300000);
-//	pair=Reduce();
-	printf("reduce end!\n");
-	info=1;
+void doReduce(int& info,int mapNum,int reduceId){ //pull the file and feed to reduce
+	ofstream outfile;
+	string output("reduce");
+	output+=itostr(reduceId);
+	char outTmp[100];
+	stoch(output,outTmp);
+	outfile.open(outTmp,ios::out|ios::trunc);
+	if(outfile.is_open()){
+		outfile.close();
+	}
+	for(int i=0;i!=mapNum;i++){
+		string fileIn;
+		fileIn="map";
+		fileIn+=itostr(i)+"out"+itostr(reduceId);
+		char fileTmp[100];
+		stoch(fileIn,fileTmp);
+		ifstream file;
+		file.open(fileTmp,ios::in);
+		map<string,string> m;
+		if(file.is_open()){
+			while(!file.eof()){
+				string s;
+				getline(file,s);
+				if(file.eof()){
+					break;
+				}
+				KV kv;
+				parse(s,kv);
+				m[kv.key]+=kv.value+",";
+			}
+			file.close();
+		}
+		ofstream outfile;
+		outfile.open(outTmp,ios::out);
+		if(outfile.is_open()){
+			for(map<string,string>::iterator it=m.begin();it!=m.end();it++){
+				string s("{key:");
+				s+=it->first+",value:{"+it->second;
+				s.erase(s.length()-1);
+				s+="}}";
+				outfile<<s<<endl;
+			}
+			outfile.close();
+		}
+		remove(fileTmp);
+
+	}
+	Reduce(output,reduceId);
+	cout<<"endReduce"<<endl;
 }
 
-int keyHash(string key){
-	int sum=0;
-	//sum+=key[i]-'0';
-	if(sum<0){
-		sum=-sum;
+void priGen(int *p,int len){
+	int j=0;
+	int i;
+	for(i=1;i!=1000;i++){
+		int flag=0;
+		int leave=0;
+		for(int t=2;t<=(int)(sqrt(i));t++){
+			if(i%t==0){
+				flag=1;
+				break;
+			}
+		}
+		if(flag==0){
+			p[j]=i;
+			j++;
+			if(j==len){
+				leave=1;
+			}
+		}
+		if(leave==1){
+			break;
+		}
 	}
-	return sum;
 }

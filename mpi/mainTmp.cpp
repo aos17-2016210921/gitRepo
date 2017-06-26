@@ -1,4 +1,3 @@
-#include<iostream>
 #include<stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
@@ -117,56 +116,9 @@ int main(int argc,char* argv[]){
 		procNum++;
 	}
 	printf("total:%d,%d,%d\n",total,procNum,size);
-	/*dispatch file*/
-	for(int i=0;i!=procNum;i++){
-		int mapId=size*i+rank;
-		cout<<"mapId:"<<mapId<<endl;
-		ifstream file;
-		file.open(argv[2],ios::in);
-		if(file.is_open()){
-			file.seekg(0,ios::end);
-			int m=file.tellg();
-			ifstream fh;
-			fh.open(argv[2],ios::in);
-			fh.seekg(i*m/total,ios::cur);
-			if(mapId!=0){
-				string s;
-				fh>>s;
-			}
-			int m2;
-			if(mapId==total-1){
-				m2=m;
-			}else{
-				ifstream fh1;
-				fh1.open(argv[2],ios::in);
-				fh1.seekg((i+1)*m/3,ios::cur);
-				string s;
-				fh1>>s;
-				m2=fh1.tellg();
-				fh1.close();
-			}
-			ofstream outFile;
-			string outname("map");
-			outname+=itostr(mapId);
-			char outch[100];
-			stoch(outname,outch);
-			//cout<<"out:"<<outch<<outname<<endl;
-			outFile.open(outch,ios::out|ios::trunc);
-			int m1=0;
-			while(m1<m2&&m1>=0){
-				string s;
-				fh>>s;
-				outFile<<s<<" ";
-				m1=fh.tellg();
-			}
-			fh.close();
-			outFile.close();
-			file.close();
-		}
-	}//op
 	MPI_Comm* intercomm;
 	int state=0;
-	intercomm=new MPI_Comm [procNum];//!!!
+	intercomm=new MPI_Comm [1];
 	MPI_Request* request;
 	MPI_Status* status;
 	int* Index;
@@ -227,7 +179,8 @@ int main(int argc,char* argv[]){
 				MPI_Irecv(&alive[i],1,MPI_INT,0,0,intercomm[i],&req[i]);
 		}
 		//cout<<"master recv"<<endl;
-		MPI_Waitall(procNum,req,sta);//
+		MPI_Waitall(procNum,req,sta);
+		//cout<<"bad"<<endl;
 		usleep(30000);
 		
 		for(int i=0;i!=procNum;i++){
@@ -254,24 +207,24 @@ int main(int argc,char* argv[]){
 			int sendState;
 			if(state==1){
 				if(mapSt[i]==0){
-					initData[0]=1;
+					sendState=1;
 				}else{
-					initData[0]=-1;
+					sendState=-1;
 				}
 			}
 			if(state==2){
 				if(reduceSt[i]==0){
-					initData[0]=2;
+					sendState=2;
 				}else{
-					initData[0]=-2;
+					sendState=-2;
 				}
 			}
-			MPI_Isend(&initData,5,MPI_INT,0,0,intercomm[pos],&reqRes[i]);
+			MPI_Isend(&sendState,1,MPI_INT,0,0,intercomm[pos],&reqRes[i]);
 			//cout<<"debug"<<endl;
 		}							          
 		MPI_Testall(restartNum,reqRes,indexRes,staRes);		          
 		restartNum=0;
-		switch(state){//schedule
+		switch(state){
 			case 0:
 				beats++;
 				if(beats==5){//heartbeat
@@ -330,7 +283,7 @@ int main(int argc,char* argv[]){
 		}
 		int index2[MAX_PROC];
 		MPI_Testall(procNum,reqs,index2,stas);
-		usleep(50000);//
+		usleep(50000);
 		//printf("haha\n");
 		if(state==3){
 			printf("end!\n");

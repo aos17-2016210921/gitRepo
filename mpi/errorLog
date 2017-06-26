@@ -1,0 +1,137 @@
+total:6,2,4
+total:6,1,4
+total:6,1,4
+total:6,2,4
+begin worker
+map3
+begin worker
+map1
+begin worker
+map2
+begin worker
+map5
+begin worker
+map0
+begin worker
+map4
+mapID:1!
+mapID:3!
+mapID:4!
+mapID:0!
+mapID:5!
+mapID:2!
+end stage and rank:0
+end stage and rank:0
+end stage and rank:0
+end stage and rank:0
+end stage and rank:0
+[go:15461] *** Process received signal ***
+[go:15461] Signal: Aborted (6)
+[go:15461] Signal code:  (-6)
+[go:15461] [ 0] /lib/x86_64-linux-gnu/libc.so.6(+0x354b0)[0x7f0467fcf4b0]
+[go:15461] [ 1] /lib/x86_64-linux-gnu/libc.so.6(gsignal+0x38)[0x7f0467fcf428]
+[go:15461] [ 2] /lib/x86_64-linux-gnu/libc.so.6(abort+0x16a)[0x7f0467fd102a]
+[go:15461] [ 3] /lib/x86_64-linux-gnu/libc.so.6(+0x777ea)[0x7f04680117ea]
+[go:15461] [ 4] /lib/x86_64-linux-gnu/libc.so.6(+0x8037a)[0x7f046801a37a]
+[go:15461] [ 5] /lib/x86_64-linux-gnu/libc.so.6(cfree+0x4c)[0x7f046801e53c]
+[go:15461] [ 6] ./worker[0x40432b]
+[go:15461] [ 7] ./worker[0x4048cf]
+[go:15461] [ 8] /usr/lib/x86_64-linux-gnu/libgomp.so.1(GOMP_parallel_sections+0x7f)[0x7f046858612f]
+[go:15461] [ 9] ./worker[0x4030a3]
+[go:15461] [10] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf0)[0x7f0467fba830]
+[go:15461] [11] ./worker[0x4029b9]
+[go:15461] *** End of error message ***
+[go:15447] *** Process received signal ***
+[go:15447] Signal: Aborted (6)
+[go:15447] Signal code:  (-6)
+[go:15447] [ 0] /lib/x86_64-linux-gnu/libc.so.6(+0x354b0)[0x7f5fb7df74b0]
+[go:15447] [ 1] /lib/x86_64-linux-gnu/libc.so.6(gsignal+0x38)[0x7f5fb7df7428]
+[go:15447] [ 2] /lib/x86_64-linux-gnu/libc.so.6(abort+0x16a)[0x7f5fb7df902a]
+[go:15447] [ 3] /lib/x86_64-linux-gnu/libc.so.6(+0x777ea)[0x7f5fb7e397ea]
+[go:15447] [ 4] /lib/x86_64-linux-gnu/libc.so.6(+0x8037a)[0x7f5fb7e4237a]
+[go:15447] [ 5] /lib/x86_64-linux-gnu/libc.so.6(cfree+0x4c)[0x7f5fb7e4653c]
+[go:15447] [ 6] ./worker[0x40432b]
+[go:15447] [ 7] ./worker[0x4048cf]
+[go:15447] [ 8] /usr/lib/x86_64-linux-gnu/libgomp.so.1(+0xf43e)[0x7f5fb83b143e]
+[go:15447] [ 9] /lib/x86_64-linux-gnu/libpthread.so.0(+0x76ba)[0x7f5fb74286ba]
+[go:15447] [10] /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d)[0x7f5fb7ec93dd]
+[go:15447] *** End of error message ***
+[go:15448] *** Process received signal ***
+[go:15448] Signal: Aborted (6)
+[go:15448] Signal code:  (-6)
+[go:15448] [ 0] /lib/x86_64-linux-gnu/libc.so.6(+0x354b0)[0x7f7ffd4ab4b0]
+[go:15448] [ 1] /lib/x86_64-linux-gnu/libc.so.6(gsignal+0x38)[0x7f7ffd4ab428]
+[go:15448] [ 2] /lib/x86_64-linux-gnu/libc.so.6(abort+0x16a)[0x7f7ffd4ad02a]
+[go:15448] [ 3] /lib/x86_64-linux-gnu/libc.so.6(+0x777ea)[0x7f7ffd4ed7ea]
+[go:15448] [ 4] /lib/x86_64-linux-gnu/libc.so.6(+0x8037a)[0x7f7ffd4f637a]
+[go:15448] [ 5] /lib/x86_64-linux-gnu/libc.so.6(cfree+0x4c)[0x7f7ffd4fa53c]
+[go:15448] [ 6] ./worker[0x40432b]
+[go:15448] [ 7] ./worker[0x4048cf]
+[go:15448] [ 8] /usr/lib/x86_64-linux-gnu/libgomp.so.1(+0xf43e)[0x7f7ffda6543e]
+[go:15448] [ 9] /lib/x86_64-linux-gnu/libpthread.so.0(+0x76ba)[0x7f7ffcadc6ba]
+[go:15448] [10] /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d)[0x7f7ffd57d3dd]
+[go:15448] *** End of error message ***
+[go:15446] *** Process received signal ***
+[go:15446] Signal: Aborted (6)
+[go:15446] Signal code:  (-6)
+[go:15446] [ 0] /lib/x86_64-linux-gnu/libc.so.6(+0x354b0)[0x7f8c1415f4b0]
+[go:15446] [ 1] /lib/x86_64-linux-gnu/libc.so.6(gsignal+0x38)[0x7f8c1415f428]
+[go:15446] [ 2] /lib/x86_64-linux-gnu/libc.so.6(abort+0x16a)[0x7f8c1416102a]
+[go:15446] [ 3] /lib/x86_64-linux-gnu/libc.so.6(+0x777ea)[0x7f8c141a17ea]
+[go:15446] [ 4] /lib/x86_64-linux-gnu/libc.so.6(+0x8037a)[0x7f8c141aa37a]
+[go:15446] [ 5] /lib/x86_64-linux-gnu/libc.so.6(cfree+0x4c)[0x7f8c141ae53c]
+[go:15446] [ 6] ./worker[0x40432b]
+[go:15446] [ 7] ./worker[0x4048cf]
+[go:15446] [ 8] /usr/lib/x86_64-linux-gnu/libgomp.so.1(+0xf43e)[0x7f8c1471943e]
+[go:15446] [ 9] /lib/x86_64-linux-gnu/libpthread.so.0(+0x76ba)[0x7f8c137906ba]
+[go:15446] [10] /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d)[0x7f8c142313dd]
+[go:15446] *** End of error message ***
+[go:15454] *** Process received signal ***
+[go:15454] Signal: Aborted (6)
+[go:15454] Signal code:  (-6)
+[go:15454] [ 0] /lib/x86_64-linux-gnu/libc.so.6(+0x354b0)[0x7f915fdfc4b0]
+[go:15454] [ 1] /lib/x86_64-linux-gnu/libc.so.6(gsignal+0x38)[0x7f915fdfc428]
+[go:15454] [ 2] /lib/x86_64-linux-gnu/libc.so.6(abort+0x16a)[0x7f915fdfe02a]
+[go:15454] [ 3] /lib/x86_64-linux-gnu/libc.so.6(+0x777ea)[0x7f915fe3e7ea]
+[go:15454] [ 4] /lib/x86_64-linux-gnu/libc.so.6(+0x8037a)[0x7f915fe4737a]
+[go:15454] [ 5] /lib/x86_64-linux-gnu/libc.so.6(cfree+0x4c)[0x7f915fe4b53c]
+[go:15454] [ 6] ./worker[0x40432b]
+[go:15454] [ 7] ./worker[0x4048cf]
+[go:15454] [ 8] /usr/lib/x86_64-linux-gnu/libgomp.so.1(+0xf43e)[0x7f91603b643e]
+[go:15454] [ 9] /lib/x86_64-linux-gnu/libpthread.so.0(+0x76ba)[0x7f915f42d6ba]
+[go:15454] [10] /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d)[0x7f915fece3dd]
+[go:15454] *** End of error message ***
+[go:15458] *** Process received signal ***
+[go:15458] Signal: Aborted (6)
+[go:15458] Signal code:  (-6)
+[go:15458] [ 0] /lib/x86_64-linux-gnu/libc.so.6(+0x354b0)[0x7ff8cc9894b0]
+[go:15458] [ 1] /lib/x86_64-linux-gnu/libc.so.6(gsignal+0x38)[0x7ff8cc989428]
+[go:15458] [ 2] /lib/x86_64-linux-gnu/libc.so.6(abort+0x16a)[0x7ff8cc98b02a]
+[go:15458] [ 3] /lib/x86_64-linux-gnu/libc.so.6(+0x777ea)[0x7ff8cc9cb7ea]
+[go:15458] [ 4] /lib/x86_64-linux-gnu/libc.so.6(+0x8037a)[0x7ff8cc9d437a]
+[go:15458] [ 5] /lib/x86_64-linux-gnu/libc.so.6(cfree+0x4c)[0x7ff8cc9d853c]
+[go:15458] [ 6] ./worker[0x40432b]
+[go:15458] [ 7] ./worker[0x4048cf]
+[go:15458] [ 8] /usr/lib/x86_64-linux-gnu/libgomp.so.1(+0xf43e)[0x7ff8ccf4343e]
+[go:15458] [ 9] /lib/x86_64-linux-gnu/libpthread.so.0(+0x76ba)[0x7ff8cbfba6ba]
+[go:15458] [10] /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d)[0x7ff8cca5b3dd]
+[go:15458] *** End of error message ***
+--------------------------------------------------------------------------
+An MPI communication peer process has unexpectedly disconnected.  This
+usually indicates a failure in the peer process (e.g., a crash or
+otherwise exiting without calling MPI_FINALIZE first).
+
+Although this local MPI process will likely now behave unpredictably
+(it may even hang or crash), the root cause of this problem is the
+failure of the peer -- that is what you need to investigate.  For
+example, there may be a core file that you can examine.  More
+generally: such peer hangups are frequently caused by application bugs
+or other external events.
+
+  Local host: go
+  Local PID:  15434
+  Peer host:  go
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+mpiexec noticed that process rank 0 with PID 0 on node go exited on signal 6 (Aborted).
+--------------------------------------------------------------------------

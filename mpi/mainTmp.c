@@ -1,17 +1,12 @@
-#include<iostream>
 #include<stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
 #include<omp.h>
-#include<random>
-#include<string>
 #include"mpi.h"
-#include"mapReduce.h"
 #define false 0
 #define true 1
 #define MAX_PROC 12
 #define MAX_MEM 20
-using namespace std;
 typedef struct mallocSet{
 	int* intMalloc[MAX_MEM];
 	double* doubleMalloc[MAX_MEM];
@@ -63,19 +58,19 @@ int registMpista(mallocSet ms,MPI_Status* p){
 }
 int freeMalloc(mallocSet ms){
 	for(int i=0;i!=ms.intLen;i++){
-		delete [] (ms.intMalloc[i]);
+		free(ms.intMalloc[i]);
 	}
 	ms.intLen=0;
 	for(int i=0;i!=ms.doubleLen;i++){
-		delete [] (ms.doubleMalloc[i]);
+		free(ms.doubleMalloc[i]);
 	}
 	ms.doubleLen=0;
 	for(int  i=0;i!=ms.mpireqLen;i++){
-		delete [] (ms.mpireqMalloc[i]);
+		free(ms.mpireqMalloc[i]);
 	}
 	ms.mpireqLen=0;
 	for(int i=0;i!=ms.mpistaLen;i++){
-		delete [] (ms.mpistaMalloc[i]);
+		free(ms.mpistaMalloc[i]);
 	}
 	ms.mpistaLen=0;
 	return 0;
@@ -91,14 +86,6 @@ void initVec(int* vec,int length,int v){
 		vec[i]=v;
 	}
 }
-void initWorkerPos(char* worker,char *arg){
-	int i=0;
-	while(arg[i]!='\0'){
-		worker[i]=arg[i];
-		i++;
-	}
-	worker[i]='\0';
-}
 int main(int argc,char* argv[]){
 	int rank,size;
 	mallocSet ms;
@@ -106,89 +93,31 @@ int main(int argc,char* argv[]){
 	MPI_Init(&argc,&argv);
 	MPI_Comm_rank(MPI_COMM_WORLD,&rank);
 	MPI_Comm_size(MPI_COMM_WORLD,&size);
-	char worker[2][100];
-	char workerTmp[100]="./worker";
-	initWorkerPos(worker[0],workerTmp);
-	char workerTmp1[100]="../worker";
-	initWorkerPos(worker[1],workerTmp1);
+	char worker[100]="./worker";
 	int total=atoi(argv[1]);
 	int procNum=total/size;
 	if(total%size>rank){
 		procNum++;
 	}
 	printf("total:%d,%d,%d\n",total,procNum,size);
-	/*dispatch file*/
-	for(int i=0;i!=procNum;i++){
-		int mapId=size*i+rank;
-		cout<<"mapId:"<<mapId<<endl;
-		ifstream file;
-		file.open(argv[2],ios::in);
-		if(file.is_open()){
-			file.seekg(0,ios::end);
-			int m=file.tellg();
-			ifstream fh;
-			fh.open(argv[2],ios::in);
-			fh.seekg(i*m/total,ios::cur);
-			if(mapId!=0){
-				string s;
-				fh>>s;
-			}
-			int m2;
-			if(mapId==total-1){
-				m2=m;
-			}else{
-				ifstream fh1;
-				fh1.open(argv[2],ios::in);
-				fh1.seekg((i+1)*m/3,ios::cur);
-				string s;
-				fh1>>s;
-				m2=fh1.tellg();
-				fh1.close();
-			}
-			ofstream outFile;
-			string outname("map");
-			outname+=itostr(mapId);
-			char outch[100];
-			stoch(outname,outch);
-			//cout<<"out:"<<outch<<outname<<endl;
-			outFile.open(outch,ios::out|ios::trunc);
-			int m1=0;
-			while(m1<m2&&m1>=0){
-				string s;
-				fh>>s;
-				outFile<<s<<" ";
-				m1=fh.tellg();
-			}
-			fh.close();
-			outFile.close();
-			file.close();
-		}
-	}//op
 	MPI_Comm* intercomm;
 	int state=0;
-	intercomm=new MPI_Comm [procNum];//!!!
+	intercomm=malloc(sizeof(MPI_Comm)*1);
 	MPI_Request* request;
 	MPI_Status* status;
 	int* Index;
-	request=new MPI_Request [procNum];
+	request=malloc(sizeof(MPI_Request)*procNum);
 	registMpireq(ms,request);
-	status=new MPI_Status [procNum];
+	status=malloc(sizeof(MPI_Status)*procNum);
 	registMpista(ms,status);
-	Index=new int [procNum];
+	Index=malloc(sizeof(int)*procNum);
 	registInt(ms,Index);
-	int initData[5];//stage,mapNumID,mapNum,reduceID,reduceNum
-	initData[0]=state;
-	initData[2]=total;
-	initData[4]=total;
+	#pragma omp parallel for
 	for(int i=0;i!=procNum;i++){
-		char chTmp[100];
-		initWorkerPos(chTmp,worker[0]);
-		MPI_Comm_spawn(worker[0],MPI_ARGV_NULL,1,
+		MPI_Comm_spawn(worker,MPI_ARGV_NULL,1,
 				MPI_INFO_NULL,0,MPI_COMM_SELF,&intercomm[i],
 				MPI_ERRCODES_IGNORE);
-		initData[1]=i*size+rank;
-		initData[3]=i*size+rank;
-		MPI_Isend(&initData,5,MPI_INT,0,0,intercomm[i],&request[i]);
+		MPI_Isend(&state,1,MPI_INT,0,0,intercomm[i],&request[i]);
 	}
 	MPI_Testall(procNum,request,Index,status);
 	freeMalloc(ms);
@@ -199,13 +128,13 @@ int main(int argc,char* argv[]){
 	int* restart;
 	int restartNum=0;
 
-	mapSt=new int [procNum];//allocate pointers and regist to manage structure then init
+	mapSt=malloc(sizeof(int)*procNum);//allocate pointers and regist to manage structure then init
 	registInt(ms,mapSt);
-	reduceSt=new int [procNum];
+	reduceSt=malloc(sizeof(int)*procNum);
 	registInt(ms,reduceSt);
-	alive=new int [procNum];
+	alive=malloc(sizeof(int)*procNum);
 	registInt(ms,alive);
-	restart=new int [procNum];
+	restart=malloc(sizeof(int)*procNum);
 	registInt(ms,restart);
 	initVec(mapSt,procNum,0);
 	initVec(reduceSt,procNum,0);
@@ -226,14 +155,12 @@ int main(int argc,char* argv[]){
 		for(int i=0;i!=procNum;i++){
 				MPI_Irecv(&alive[i],1,MPI_INT,0,0,intercomm[i],&req[i]);
 		}
-		//cout<<"master recv"<<endl;
-		MPI_Waitall(procNum,req,sta);//
+		MPI_Waitall(procNum,req,sta);
 		usleep(30000);
-		
 		for(int i=0;i!=procNum;i++){
 			if(alive[i]==-1){
 				printf("spawn\n");
-				MPI_Comm_spawn(worker[i],MPI_ARGV_NULL,1,
+				MPI_Comm_spawn(worker,MPI_ARGV_NULL,1,
 						MPI_INFO_NULL,0,MPI_COMM_SELF,&intercomm[i],
 						MPI_ERRCODES_IGNORE);
 				restart[restartNum]=i;
@@ -254,24 +181,23 @@ int main(int argc,char* argv[]){
 			int sendState;
 			if(state==1){
 				if(mapSt[i]==0){
-					initData[0]=1;
+					sendState=1;
 				}else{
-					initData[0]=-1;
+					sendState=-1;
 				}
 			}
 			if(state==2){
 				if(reduceSt[i]==0){
-					initData[0]=2;
+					sendState=2;
 				}else{
-					initData[0]=-2;
+					sendState=-2;
 				}
 			}
-			MPI_Isend(&initData,5,MPI_INT,0,0,intercomm[pos],&reqRes[i]);
-			//cout<<"debug"<<endl;
+			MPI_Isend(&sendState,1,MPI_INT,0,0,intercomm[pos],&reqRes[i]); 
 		}							          
 		MPI_Testall(restartNum,reqRes,indexRes,staRes);		          
 		restartNum=0;
-		switch(state){//schedule
+		switch(state){
 			case 0:
 				beats++;
 				if(beats==5){//heartbeat
@@ -330,7 +256,7 @@ int main(int argc,char* argv[]){
 		}
 		int index2[MAX_PROC];
 		MPI_Testall(procNum,reqs,index2,stas);
-		usleep(50000);//
+		usleep(50000);
 		//printf("haha\n");
 		if(state==3){
 			printf("end!\n");
